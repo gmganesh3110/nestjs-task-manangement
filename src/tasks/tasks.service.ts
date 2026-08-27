@@ -85,10 +85,10 @@ export class TasksService {
   //   return task;
   // }
 
-  // deleteTask(id: string): void {
-  //   const found = this.getTaskById(id);
-  //   this.tasks = this.tasks.filter((task) => task.id !== found.id);
-  // }
+  async deleteTask(id: string): Promise<void> {
+    const found = await this.getTaskById(id);
+    await this.taskRepository.delete(found.id);
+  }
 
   // updateTaskStatus(id: string, updateTaskStatus: UpdateTaskStatus): Task {
   //   const task = this.getTaskById(id);
