@@ -17,10 +17,10 @@ import { Task } from './task.entity';
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
-  // @Get()
-  // getTasks(@Query() filterDto: GetTasksFilterDto): Task[] {
-  //   return this.tasksService.getTasks(filterDto);
-  // }
+  @Get()
+  async getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return await this.tasksService.getTasks(filterDto);
+  }
 
   @Post()
   async createTask(@Body() createTaskDto: CreateTaskDto): Promise<any> {
@@ -37,11 +37,11 @@ export class TasksController {
     return await this.tasksService.deleteTask(id);
   }
 
-  // @Patch('/:id/status')
-  // updateTaskStatus(
-  //   @Param('id') id: string,
-  //   @Body() updateTaskStatus: UpdateTaskStatus,
-  // ): Task {
-  //   return this.tasksService.updateTaskStatus(id, updateTaskStatus);
-  // }
+  @Patch('/:id/status')
+  async updateTaskStatus(
+    @Param('id') id: string,
+    @Body() updateTaskStatus: UpdateTaskStatus,
+  ): Promise<Task> {
+    return this.tasksService.updateTaskStatus(id, updateTaskStatus);
+  }
 }
