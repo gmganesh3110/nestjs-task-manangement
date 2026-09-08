@@ -8,14 +8,17 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { User } from './user.entity';
-import { AuthCredentials } from './auth-credentials.dto';
+import { AuthCredentials } from './dto/auth-credentials.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
   async createUser(authCredentials: AuthCredentials): Promise<void> {
     const { username, password } = authCredentials;
@@ -38,7 +41,9 @@ export class AuthService {
     }
   }
 
-  async signIn(authCredentials: AuthCredentials): Promise<string> {
+  async signIn(
+    authCredentials: AuthCredentials,
+  ): Promise<{ accessToken: string }> {
     const { username, password } = authCredentials;
     const where: FindOptionsWhere<User>[] = [];
     where.push({ username });
@@ -48,8 +53,11 @@ export class AuthService {
     }
     const isMatch: boolean = await bcrypt.compare(password, user.password);
     if (isMatch) {
-      return 'success';
+      const payload: JwtPayload = { username };
+      const accessToken = await this.jwtService.sign(payload);
+      return { accessToken };
     }
+
     throw new UnauthorizedException('Password incorrect');
   }
 }
