@@ -8,6 +8,7 @@ async function bootstrap() {
   console.log(process.env.NODE);
   const logger = new Logger();
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
 
